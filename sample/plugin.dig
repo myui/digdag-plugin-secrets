@@ -1,8 +1,8 @@
 _export:
   plugin:
     repositories:
-      - file://${repos}
-      # - https://jitpack.io
+      # - file://${repos}
+      - https://jitpack.io
     dependencies:
       - com.github.myui:digdag-plugin-secrets:0.1.0
       # - io.digdag.plugin:digdag-plugin-secrets:0.1.0      
