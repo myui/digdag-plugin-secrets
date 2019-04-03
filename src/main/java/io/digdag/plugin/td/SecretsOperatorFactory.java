@@ -69,16 +69,24 @@ public class SecretsOperatorFactory implements OperatorFactory {
           () -> systemConfig.getOptional("config.td.default_endpoint", String.class),
           () -> secrets.getSecretOptional("endpoint")).or("api.treasuredata.com");
 
-      Map<String, String> options = params.getMapOrEmpty("options", String.class, String.class);
+      Map<String, String> setOptions =
+          params.getMapOrEmpty("set_options", String.class, String.class);
+      Map<String, String> deleteOptions =
+          params.getMapOrEmpty("delete_options", String.class, String.class);
 
-      logger.info("Set project '" + projectId + "' secrets for endpoint: " + endpoint + "...\n"
-          + options.toString());
 
-      if (!options.isEmpty()) {
+      if (!setOptions.isEmpty() || !deleteOptions.isEmpty()) {
         DigdagClient client = buildClient(endpoint, env);
 
-        for (Entry<String, String> kv : options.entrySet()) {
-          client.setProjectSecret(projectId, kv.getKey(), kv.getValue());
+        for (Entry<String, String> opt : setOptions.entrySet()) {
+          String key = opt.getKey();
+          if (deleteOptions.remove(key) != null) {
+            continue;
+          }
+          client.setProjectSecret(projectId, key, opt.getValue());
+        }
+        for (Entry<String, String> opt : deleteOptions.entrySet()) {
+          client.deleteProjectSecret(projectId, opt.getKey());
         }
       }
 
@@ -130,7 +138,7 @@ public class SecretsOperatorFactory implements OperatorFactory {
     }
 
     String scheme = useSsl ? "https" : "http";
-    logger.debug("Using endpoint {}://{}:{}", scheme, host, port);
+    logger.info("Using endpoint {}://{}:{}", scheme, host, port);
 
     DigdagClient.Builder builder = DigdagClient.builder().host(host).port(port).ssl(useSsl);
 

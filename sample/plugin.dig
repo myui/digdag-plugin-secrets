@@ -4,14 +4,19 @@ _export:
       # - file://${repos}
       - https://jitpack.io
     dependencies:
-      - com.github.myui:digdag-plugin-secrets:0.1.0
-      # - io.digdag.plugin:digdag-plugin-secrets:0.1.0      
+      - com.github.myui:digdag-plugin-secrets:0.1.1
+      # - io.digdag.plugin:digdag-plugin-secrets:0.1.1
 
 +step1:
   secrets>: 
   endpoint: http://127.0.0.1:65432/
-  project_id: 3
-  options: {
+  set_options: {
     key1: value1,
-    key2: value2
+    key2: value2,
+    key3: value3
   }
+
++step2:
+  secrets>: 
+  endpoint: http://127.0.0.1:65432/
+  delete_options: [ 'key1', 'key3' ]
