@@ -42,6 +42,7 @@ public class SecretsOperatorFactory implements OperatorFactory {
     this.systemConfig = Objects.requireNonNull(systemConfig);
   }
 
+  @Override
   public String getType() {
     return "secrets";
   }
@@ -74,7 +75,6 @@ public class SecretsOperatorFactory implements OperatorFactory {
       Map<String, String> deleteOptions =
           params.getMapOrEmpty("delete_options", String.class, String.class);
 
-
       if (!setOptions.isEmpty() || !deleteOptions.isEmpty()) {
         DigdagClient client = buildClient(endpoint, env);
 
@@ -94,8 +94,9 @@ public class SecretsOperatorFactory implements OperatorFactory {
     }
   }
 
+  @Nonnull
   @SafeVarargs
-  protected static <T> Optional<T> first(Supplier<Optional<T>>... suppliers) {
+  private static <T> Optional<T> first(@Nonnull Supplier<Optional<T>>... suppliers) {
     for (Supplier<Optional<T>> supplier : suppliers) {
       Optional<T> optional = supplier.get();
       if (optional.isPresent()) {
